@@ -3,6 +3,7 @@
   before granting access to the next middleware/route handler
 */
 
+const jwt = require("jsonwebtoken");
 module.exports = (req, res, next) => {
   const token = req.headers.authorization;
   const secret =
@@ -17,6 +18,6 @@ module.exports = (req, res, next) => {
       }
     });
   } else {
-    next({ message: "YOU SHALL NOT PASS!", status: 401 });
+    next({ message: "No credentials provided", status: 401 });
   }
 };
