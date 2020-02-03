@@ -3,6 +3,21 @@
   before granting access to the next middleware/route handler
 */
 
+const jwt = require("jsonwebtoken");
 module.exports = (req, res, next) => {
-  res.status(401).json({ you: 'shall not pass!' });
+  const token = req.headers.authorization;
+  const secret =
+    process.env.NODE_ENV === "development" ? "secret" : process.env.JWT_SECRET;
+  if (token) {
+    jwt.verify(token, secret, (err, decodedUser) => {
+      if (err) {
+        next({ message: err, status: 400 });
+      } else {
+        req.loggedInUser = decodedUser;
+        next();
+      }
+    });
+  } else {
+    next({ message: "No credentials provided", status: 401 });
+  }
 };
